@@ -11,6 +11,14 @@
         body {
             background-color: #704871;
         }
+        #help_doc {
+        	margin-top: 20px;
+        	padding: 20px;
+        	background-color: white; 
+            border-radius: 5px; 
+            border:1px solid #3e3939;
+            box-shadow: #3e3939 3px;
+        }
         #title_card {
             background-color: #4E2C4F; 
             color: white; 
@@ -53,8 +61,13 @@
             </div>
         </div>
     </div>
-</nav>
-<div class="container" style="margin-top: 60px;">
+</nav> 
+<div class="container" style="margin-top: 70px;">
+	<div id="hide">
+	<div class="card" id="help_doc">
+		<h3 id="h3-u4F7Fu7528u8BF4u660E"><a name="使用说明" class="reference-link"></a><span class="header-link octicon octicon-link"></span>使用说明</h3><blockquote> <p>step 1</p> </blockquote> <p>编辑一个任务分解文本文件，扩展名修改为”.wbs”。其中以缩进结构代表层次信息。缩进使用tab。</p> <pre class="prettyprint linenums prettyprinted" style=""><ol class="linenums"><li class="L0"><code><span class="pun">一级项目</span></code></li><li class="L1"><code><span class="pun">---&gt;二级项目</span></code></li><li class="L2"><code><span class="pun">---&gt;---&gt;三级项目</span></code></li></ol></pre><p>每行以空格分割三个信息，第一个为必选项：任务名称，第二个为可选项：负责人，第三个为可选项：完成状态，以“#”代表未完成，以“@”代表已完成。</p> <pre class="prettyprint linenums prettyprinted" style=""><ol class="linenums"><li class="L0"><code><span class="pln">&lt;项目名称:文本&gt; [负责人:文本] [完成状态:('#':未完成, '@':已完成)]</span></code></li></ol></pre><p>总体示例如下：</p> <pre class="prettyprint linenums prettyprinted" style=""><ol class="linenums"><li class="L0"><code><span class="pun">一级项目</span></code></li><li class="L1"><code><span class="pun">---&gt;二级项目</span><span class="lit">1</span><span class="pln"> </span><span class="pun">张三</span><span class="pln"> </span><span class="pun">@</span></code></li><li class="L2"><code><span class="pun">---&gt;二级项目</span><span class="lit">2</span></code></li><li class="L3"><code><span class="pun">---&gt;---&gt;三级项目</span><span class="pln"> </span><span class="pun">李四</span><span class="pln"> </span><span class="com">#</span></code></li></ol></pre><blockquote> <p>step 2</p> </blockquote> <p>单击上方导航栏输入框或浏览文件按钮，导入刚刚编辑好的wbs文件即可</p> 
+	</div>
+	</div>
     <div class="card" id="title_card">
         <div style="text-align: center;">
             <h1 id="wbs_title"></h1>
@@ -70,7 +83,8 @@
 <script src="https://cdn.bootcss.com/bootstrap-table/1.12.0/extensions/treegrid/bootstrap-table-treegrid.js"></script>
 <script src="https://cdn.bootcss.com/jquery-treegrid/0.2.0/js/jquery.treegrid.min.js"></script>
 <script type="text/javascript">
-    $(".card").hide();
+    $("#title_card").hide();
+    $("#table_card").hide();
 
     class Node {
         constructor(id) {
@@ -129,13 +143,15 @@
     }
 
     function readAsText() {
-        $(".card").hide();
+        $("#title_card").hide();
+    	$("#table_card").hide();
+        $("#hide").empty();
         $('#wbs_table').bootstrapTable('destroy');
         var file = document.getElementById("file").files[0];
         var fileName = file.name.substring(0, file.name.lastIndexOf('.'));
         var reader = new FileReader();
-        reader.readAsText(file);
         reader.onload = function(f) {
+        	alert(fileName);
             $('#location').val($('#file').val());
             $('#wbs_title').text(fileName);
             var $table = $('#wbs_table');
@@ -146,6 +162,7 @@
                     data: JSON.parse(result),
                     idField: 'id',
                     dataType:'jsonp',
+                    cache: false,
                     columns: [
                         { filed: 'task-id', title: '任务ID', align: 'center', formatter: 'taskNoFormatter' },
                         { field: 'task-name', title: '任务名称' },
@@ -177,8 +194,10 @@
                     },
                 });
             });
-            $(".card").fadeIn(1000);
-        }
+            $("#title_card").fadeIn(1000);
+    		$("#table_card").fadeIn(1000);
+        };
+        reader.readAsText(file);
     }
 
     function taskNoFormatter(value, row, index) {
